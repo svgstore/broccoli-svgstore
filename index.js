@@ -68,7 +68,7 @@ function parseSvg (filename, fileContents) {
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + filename.replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		$outputContents = cheerio.load("<symbol id='" + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());
