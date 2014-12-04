@@ -42,7 +42,7 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 				var stat = fs.statSync(srcDir + "/" + inputFiles[i]);
 				if (stat && stat.isFile()) {
 					var fileContents = fs.readFileSync(srcDir + "/" + inputFiles[i], { encoding: "utf8" });
-					output.push(parseSvg(fileContents));
+					output.push(parseSvg(inputFiles[i], fileContents));
 				}
 			}
 
@@ -63,12 +63,12 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 };
 
-function parseSvg (fileContents) {
+function parseSvg (filename, fileContents) {
 
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		$outputContents = cheerio.load("<symbol id='" + filename.replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());
