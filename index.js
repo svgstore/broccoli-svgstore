@@ -54,10 +54,10 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 		output.push("</svg>");
 
-		helpers.assertAbsolutePaths([outputFile]);
-		mkdirp.sync(path.join(destDir, path.dirname(outputFile)));
+		helpers.assertAbsolutePaths([self.options.outputFile]);
+		mkdirp.sync(path.join(destDir, path.dirname(self.options.outputFile)));
 		var concatenatedOutput = output.join("\n");
-		fs.writeFileSync(path.join(destDir, self.outputFile), concatenatedOutput);
+		fs.writeFileSync(path.join(destDir, self.options.outputFile), concatenatedOutput);
 
 	});
 
