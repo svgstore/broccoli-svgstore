@@ -1,0 +1,7 @@
+<!-- An SVG to use when testing passing options to SVGStore -->
+<svg id="tiles" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48" role="img" aria-labelledby="titleId" x-custom-attr="foo">
+  <defs><radial-gradient style="stroke: red;"/></defs>
+  <title id="titleId">Square Tiles</title>
+  <rect x="0" y="0" width="24" height="24" fill="yellow"/>
+  <rect x="24" y="24" width="24" height="24" fill="purple"/>
+</svg>
