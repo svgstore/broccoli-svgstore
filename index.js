@@ -1,17 +1,18 @@
 'use strict';
 
 var fs = require('fs');
-var merge = require('merge');
+var objectAssign = require('object-assign');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var CachingWriter = require('broccoli-caching-writer');
 var helpers = require('broccoli-kitchen-sink-helpers');
-
-var svgToSymbol = require('./utils/svg-to-symbol');
+var svgstore = require('svgstore');
+// var svgToSymbol = require('./utils/svg-to-symbol');
 
 var defaultSettings = {
   outputFile: '/images.svg',
-  annotation: 'SVGStore Processor'
+  annotation: 'SVGStore Processor',
+  svgstoreOpts: {},
 };
 
 // TOOD: Perhaps be a bit more robust (and thus, more explicit about the proper API) with validation
@@ -22,7 +23,7 @@ function SvgProcessor(_inputNode, _options) {
     return new SvgProcessor(_inputNode, _options);
   }
 
-  var options = merge(defaultSettings, _options);
+  var options = objectAssign({}, defaultSettings, _options);
   if (options.name != null) {
     this._name = options.name;
   } else {
@@ -44,26 +45,34 @@ function SvgProcessor(_inputNode, _options) {
 SvgProcessor.prototype = Object.create(CachingWriter.prototype);
 SvgProcessor.prototype.constructor = SvgProcessor;
 SvgProcessor.prototype.description = 'svgstore';
-module.exports = SvgProcessor;
-
 
 SvgProcessor.prototype.build = function () {
 
-  var output = ['<svg xmlns="http://www.w3.org/2000/svg" style="display: none">'];
+  var svgOutput = svgstore(this._options.svgstoreOpts);
 
   try {
-    var srcDir, inputFiles, inputFilePath, stat;
-    for (var i = 0; i < this.inputPaths.length; i++) {
+    var srcDir;
+    var inputFiles;
+    var inputFileName;
+    var inputFilePath;
+    var stat;
+    var fileContents;
+    var svgId;
+    
+    for (var i = 0, l = this.inputPaths.length; i < l; i++) {
       srcDir = this.inputPaths[i];
       inputFiles = helpers.multiGlob(["**/*.svg"], { cwd: srcDir });
 
-      for (var j = 0; j < inputFiles.length; j++) {
-        inputFilePath = path.join(srcDir, inputFiles[j]);
+      for (var j = 0, ll = inputFiles.length; j < ll; j++) {
+        inputFileName = inputFiles[j];
+        inputFilePath = path.join(srcDir, inputFileName);
         stat = fs.statSync(inputFilePath);
 
         if (stat && stat.isFile()) {
-          var fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
-          output.push(svgToSymbol(inputFilePath, fileContents));
+          fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
+          svgId = inputFileName.replace(/\.[^\.]+$/, '');
+          
+          svgOutput.add(svgId, fileContents);
         }
       }
     }
@@ -73,14 +82,13 @@ SvgProcessor.prototype.build = function () {
     }
   }
 
-  output.push("</svg>");
+  helpers.assertAbsolutePaths([this.outputPath]); // ❓❓ QUESTION: Necessary?
 
-  helpers.assertAbsolutePaths([this.outputPath]); // TODO: Necessary?
-
-  var concatenatedOutput = output.join("\n");
   var outputDestination = path.join(this.outputPath, this._options.outputFile);
 
   mkdirp.sync(path.dirname(outputDestination));
 
-  return fs.writeFileSync(outputDestination, concatenatedOutput);
+  return fs.writeFileSync(outputDestination, svgOutput.toString({ inline: true }));
 };
+
+module.exports = SvgProcessor;
