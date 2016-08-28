@@ -10,17 +10,19 @@
   "scripts": {
     "test": "./node_modules/.bin/_mocha"
   },
-  "author": "Jeremy Marquis <jeremy@jeremymarquis.com>",
+  "author": "Brian Sipple <brsipple42@gmail.com>",
   "license": "MIT",
   "keywords": [
     "broccoli-plugin",
     "svg",
-    "svgstore"
+    "svgstore",
+    "broccoli svgstore",
+    "node svgstore"
   ],
   "bugs": {
-    "url": "https://github.com/jmarquis/broccoli-svgstore/issues"
+    "url": "https://github.com/svgstore/broccoli-svgstore/issues"
   },
-  "homepage": "https://github.com/jmarquis/broccoli-svgstore",
+  "homepage": "https://github.com/svgstore/broccoli-svgstore",
   "dependencies": {
     "broccoli-caching-writer": "3.0.0",
     "broccoli-kitchen-sink-helpers": "0.3.1",
