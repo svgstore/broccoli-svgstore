@@ -23,12 +23,14 @@ ID_MANIFEST[SOURCE_DIR_GROUP_1] = ['icon-circles', 'icon-triangle', 'icon-star',
 ID_MANIFEST[SOURCE_DIR_GROUP_2] = ['icon-square', 'icon-smiley', 'icon-movie-ticket'];
 ID_MANIFEST[SOURCE_DIR_SVGSTORE_OPTS] = ['svgstore-opts'];
 
-function makeBuilderFromInputNodes(inputNodes, options = {}) {
+function makeBuilderFromInputNodes(inputNodes, options) {
+  var options = options || {};
   var svgProcessor = new SvgProcessor(inputNodes, {
     outputFile: options.outputFile || OUTPUT_FILE,
     annotation: options.annotation || 'SVGStore Processor -- Tests',
     svgstoreOpts: options.svgstoreOpts || {} 
   });
+  
   return new broccoli.Builder(svgProcessor); 
 }
 
@@ -37,9 +39,7 @@ function loadSVG(filePath) {
   return cheerio.load(fileContent, { xmlMode: true });
 }
 
-function testForSymbols($loadedSVG, expectedSymbolIds, opts = {}) {
-  // var fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
-  // var $ = cheerio.load(fileContent, { xmlMode: true });
+function testForSymbols($loadedSVG, expectedSymbolIds) {
   
   // test proper structure
   var $svg = $loadedSVG('svg');
@@ -55,9 +55,8 @@ function testForSymbols($loadedSVG, expectedSymbolIds, opts = {}) {
 
   expect(symbols.length).to.equal(expectedSymbolIds.length);
 
-  var $symbol;
   expectedSymbolIds.forEach(function (id, idx) {
-    $symbol = $loadedSVG('svg #' + id).first();
+    var $symbol = $loadedSVG('svg #' + id).first();
     expect($symbol[0].tagName).to.equal('symbol');
     expect($symbol.attr('id')).to.equal(id);
   });
