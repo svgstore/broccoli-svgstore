@@ -7,7 +7,6 @@ var mkdirp = require('mkdirp');
 var CachingWriter = require('broccoli-caching-writer');
 var helpers = require('broccoli-kitchen-sink-helpers');
 var svgstore = require('svgstore');
-// var svgToSymbol = require('./utils/svg-to-symbol');
 
 var defaultSettings = {
   outputFile: '/images.svg',

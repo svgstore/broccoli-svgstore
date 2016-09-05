@@ -113,7 +113,7 @@ describe('SVGProcessor', function () {
 
   describe('build', function() {
 
-    it('writes all SVGs in a single directory to the target outputFile', function(done) {      
+    it('writes all SVGs in a single directory to the target outputFile', function() {      
       var inputNodes = [SOURCE_DIR_GROUP_1];
       builder = makeBuilderFromInputNodes(inputNodes);
 
@@ -121,11 +121,10 @@ describe('SVGProcessor', function () {
         var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
         
         testForSymbols(loadSVG(outputDestination), ID_MANIFEST[SOURCE_DIR_GROUP_1]);
-        done();
       });    
     });
 
-    it('writes all SVGs from a list of directories to the target outputFile', function(done) {
+    it('writes all SVGs from a list of directories to the target outputFile', function() {
       var inputNodes = [SOURCE_DIR_GROUP_1, SOURCE_DIR_GROUP_2];
       builder = makeBuilderFromInputNodes(inputNodes);
 
@@ -134,12 +133,11 @@ describe('SVGProcessor', function () {
         var symbolIds = ID_MANIFEST[SOURCE_DIR_GROUP_1].concat(ID_MANIFEST[SOURCE_DIR_GROUP_2]);  
 
         testForSymbols(loadSVG(outputDestination), symbolIds);
-        done();
       });      
     });
 
     // TODO: Implement test
-    it('passes options to SVGStore', function(done) {
+    it('passes options to SVGStore', function() {
       var inputNode = SOURCE_DIR_SVGSTORE_OPTS;
       var CUSTOM_ATTR_VALUES = {
         'x-custom-attr': 'foo'
@@ -157,7 +155,6 @@ describe('SVGProcessor', function () {
         testForSymbols($, symbolId);
 
         expect($('symbol').attr('x-custom-attr')).to.equal(CUSTOM_ATTR_VALUES['x-custom-attr']);
-        done();
       });
     });
   });
