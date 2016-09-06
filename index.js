@@ -45,33 +45,35 @@ SvgProcessor.prototype = Object.create(CachingWriter.prototype);
 SvgProcessor.prototype.constructor = SvgProcessor;
 SvgProcessor.prototype.description = 'svgstore';
 
-SvgProcessor.prototype.build = function () {
+/**
+ * Overrides broccoli-plugin's `build' function.
+ * @see: https://github.com/broccolijs/broccoli-plugin#pluginprototypebuild
+ */
+SvgProcessor.prototype.build = function() {
 
   var svgOutput = svgstore(this._options.svgstoreOpts);
+  var fileSettings = this._options.fileSettings || {};
 
   try {
-    var srcDir;
-    var inputFiles;
-    var inputFileName;
-    var inputFilePath;
-    var stat;
-    var fileContents;
-    var svgId;
-    
+    // iterate through `inputPaths` of our `inputNodes` (`inputPaths` is an array of 
+    // paths on disk corresponding to each node in `inputNodes`)
     for (var i = 0, l = this.inputPaths.length; i < l; i++) {
-      srcDir = this.inputPaths[i];
-      inputFiles = helpers.multiGlob(["**/*.svg"], { cwd: srcDir });
+      var srcDir = this.inputPaths[i];
+      var inputFiles = helpers.multiGlob(["**/*.svg"], { cwd: srcDir });
 
       for (var j = 0, ll = inputFiles.length; j < ll; j++) {
-        inputFileName = inputFiles[j];
-        inputFilePath = path.join(srcDir, inputFileName);
-        stat = fs.statSync(inputFilePath);
+        var inputFileName = inputFiles[j];
+        var inputFilePath = path.join(srcDir, inputFileName);
+        var stat = fs.statSync(inputFilePath);
 
         if (stat && stat.isFile()) {
-          fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
-          svgId = inputFileName.replace(/\.[^\.]+$/, '');
+          var fileNameWithoutExtension = inputFileName.replace(/\.[^\.]+$/, '');  
+          var fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
+          var inputFileSettings = fileSettings[fileNameWithoutExtension] || {};
+          var svgId = inputFileSettings.id || fileNameWithoutExtension;  
+          var fileSVGStoreOpts = inputFileSettings.svgstoreOpts || {};
           
-          svgOutput.add(svgId, fileContents);
+          svgOutput.add(svgId, fileContents, fileSVGStoreOpts);
         }
       }
     }
