@@ -1,3 +1,6 @@
+# 0.3.1 -- September 13, 2016
+- Update project licensing
+
 # 0.3.0 -- September 13, 2016
 - Add ability to set `svgstore` options on a per-file basis ([#16](https://github.com/svgstore/broccoli-svgstore/pull/16))
 
