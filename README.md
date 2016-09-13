@@ -8,7 +8,7 @@ SVGs with [`svgstore`](https://github.com/svgstore/svgstore)
 ## Installation
 
 
-```
+```shell
 npm install --save broccoli-svgstore 
 ```
 
@@ -41,9 +41,9 @@ Within your markup, you should now be able to "use" each symbol inside of other 
 - `inputNode|inputNodes` {inputNode or Array of inputNodes}: A standalone [Broccoli Node](https://github.com/broccolijs/broccoli/blob/master/docs/node-api.md), or a list of them. 
   The root of each node's source directory will form the starting point for a recursive search of `.svg` files.
 
-- `options`: {Object}: [Options for `broccoli-svgstore`](#broccoli-svgstore-options) 
+- `options` {Object}: [Options for `broccoli-svgstore`](#options)
 
-### <a name="broccoli-svgstore-options"></a>Options
+### Options
 - <a name="option-outputFile"></a>`outputFile` {string}: The name of the file -- including any directory 
   path -- [to which output will be written](https://github.com/broccolijs/broccoli-plugin#pluginprototypebuild)
   (starting from the root directory of your build destination).
@@ -62,4 +62,22 @@ Within your markup, you should now be able to "use" each symbol inside of other 
 
   Required: `false`  
   Default: `{}`
+
+- `fileSettings` {Object}: a hash of per-file settings. 
+That is, each root key should correspond to a file name of an SVG that 
+will be found in this node. It's value should then be an Object with any of the following settings:
+  + `id` {string}: A custom id to be used for this SVG's final `<symbol>`.
+  + `svgstoreOpts` {Object}: same as `options.svgstoreOpts`, but scoped to the file
+
+  Example usage:
+
+  ```javascript
+    var outputNode = svgstore(inputNodes, {
+      outputFile: "/assets/icons.svg",
+      fileSettings: {
+        twitter: { id: 'tweet' },
+        menu: { id: 'hamburger', svgstoreOpts: { customSymbolAttrs: ['preserveAspectRatio'] } }
+      }
+    });
+  ```
 

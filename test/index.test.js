@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var fs = require('fs');
 var expect = require('chai').expect;
@@ -28,7 +30,8 @@ function makeBuilderFromInputNodes(inputNodes, options) {
   var svgProcessor = new SvgProcessor(inputNodes, {
     outputFile: options.outputFile || OUTPUT_FILE,
     annotation: options.annotation || 'SVGStore Processor -- Tests',
-    svgstoreOpts: options.svgstoreOpts || {} 
+    svgstoreOpts: options.svgstoreOpts || {},
+    fileSettings: options.fileSettings || {}
   });
   
   return new broccoli.Builder(svgProcessor); 
@@ -40,7 +43,6 @@ function loadSVG(filePath) {
 }
 
 function testForSymbols($loadedSVG, expectedSymbolIds) {
-  
   // test proper structure
   var $svg = $loadedSVG('svg');
   
@@ -154,6 +156,26 @@ describe('SVGProcessor', function () {
         testForSymbols($, symbolId);
 
         expect($('symbol').attr('x-custom-attr')).to.equal(CUSTOM_ATTR_VALUES['x-custom-attr']);
+      });
+    });
+
+    it('enables per-file configuration via a `fileSettings` hash', function() {
+      var inputNodes = [SOURCE_DIR_GROUP_1];
+      var customIDs = ['customID-1', 'customID-2', 'customID-3'];
+      var fileSettings = { 
+        [ID_MANIFEST[SOURCE_DIR_GROUP_1][0]]: { id: customIDs[0] },
+        [ID_MANIFEST[SOURCE_DIR_GROUP_1][1]]: { id: customIDs[1] },
+        [ID_MANIFEST[SOURCE_DIR_GROUP_1][2]]: { id: customIDs[2] }
+      };
+
+      builder = makeBuilderFromInputNodes(inputNodes, { fileSettings });
+
+      return builder.build().then(function (results) {
+        var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
+        var symbolIds = customIDs.concat(ID_MANIFEST[SOURCE_DIR_GROUP_1][3]);
+
+        var $ = loadSVG(outputDestination);
+        testForSymbols($, symbolIds);
       });
     });
   });
