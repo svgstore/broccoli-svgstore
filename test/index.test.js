@@ -140,22 +140,26 @@ describe('SVGProcessor', function () {
     // TODO: Implement test
     it('passes options to SVGStore', function() {
       var inputNode = SOURCE_DIR_SVGSTORE_OPTS;
-      var CUSTOM_ATTR_VALUES = {
-        'x-custom-attr': 'foo'
-      };
+      var CUSTOM_SYMBOL_ATTRS = { 'x-custom-attr': 'awesome' };
+      var CUSTOM_SVG_ATTRS = { 'x-custom-attr': 'sauce' };
 
       builder = makeBuilderFromInputNodes(inputNode, {
-        svgstoreOpts: { customSymbolAttrs: ['x-custom-attr'] }        
+        svgstoreOpts: { 
+          copiedSymbolAttrs: ['x-custom-attr'],
+          customSymbolAttrs: CUSTOM_SYMBOL_ATTRS, 
+          customSVGAttrs: CUSTOM_SVG_ATTRS
+        }
       });
 
       return builder.build().then(function (results) {
         var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
-        var symbolId = ID_MANIFEST[SOURCE_DIR_SVGSTORE_OPTS];
+        var symbolIds = ID_MANIFEST[SOURCE_DIR_SVGSTORE_OPTS];
 
         var $ = loadSVG(outputDestination);
-        testForSymbols($, symbolId);
+        testForSymbols($, symbolIds);
 
-        expect($('symbol').attr('x-custom-attr')).to.equal(CUSTOM_ATTR_VALUES['x-custom-attr']);
+        expect($('svg').attr('x-custom-attr')).to.equal(CUSTOM_SVG_ATTRS['x-custom-attr']);
+        expect($('symbol').attr('x-custom-attr')).to.equal(CUSTOM_SYMBOL_ATTRS['x-custom-attr']);
       });
     });
 
