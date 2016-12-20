@@ -1,4 +1,4 @@
-# 0.4.0 -- September 20, 2016
+# 0.4.0 -- December 20, 2016
 
 - Update to `svgstore` @ 2.x.
  + Supports passing options to the [new `svgstore` options API](https://github.com/svgstore/svgstore#options)
