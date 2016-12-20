@@ -13,13 +13,14 @@ var SOURCE_DIR_GROUP_2 = path.normalize('test/fixtures/input/group-2');
 var SOURCE_DIR_SVGSTORE_OPTS = path.normalize('test/fixtures/input/standalone-svgs/svgstore-opts');
 
 var OUTPUT_FILE = path.normalize('test/fixtures/output/test-symbols.html');
-var ANNOTATION = 'testing processor'; 
+var ANNOTATION = 'testing processor';
 
 var DEFAULT_OPTS = {
   annotation: ANNOTATION,
   outputFile: OUTPUT_FILE
 };
 
+// KEY ids on their unique source file paths
 var ID_MANIFEST = {};
 ID_MANIFEST[SOURCE_DIR_GROUP_1] = ['icon-circles', 'icon-triangle', 'icon-star', 'icon-spark'];
 ID_MANIFEST[SOURCE_DIR_GROUP_2] = ['icon-square', 'icon-smiley', 'icon-movie-ticket'];
@@ -33,8 +34,8 @@ function makeBuilderFromInputNodes(inputNodes, options) {
     svgstoreOpts: options.svgstoreOpts || {},
     fileSettings: options.fileSettings || {}
   });
-  
-  return new broccoli.Builder(svgProcessor); 
+
+  return new broccoli.Builder(svgProcessor);
 }
 
 function loadSVG(filePath) {
@@ -45,7 +46,7 @@ function loadSVG(filePath) {
 function testForSymbols($loadedSVG, expectedSymbolIds) {
   // test proper structure
   var $svg = $loadedSVG('svg');
-  
+
   var svgElem = $svg[0];
   expect(svgElem.name).to.equal('svg');
   expect(svgElem.type).to.equal('tag');
@@ -68,31 +69,31 @@ function testForSymbols($loadedSVG, expectedSymbolIds) {
 var svgProcessor, builder;
 
 describe('SVGProcessor', function () {
-  
-  afterEach(function() {
-    if (builder) {
-      return builder.cleanup();
-    }
-  });
 
-  describe('construction', function() {  
-    
+  // afterEach(function() {
+  //   if (builder) {
+  //     return builder.cleanup();
+  //   }
+  // });
+
+  describe('construction', function() {
+
     it('extends `broccoli-caching-writer`', function() {
       svgProcessor = new SvgProcessor([SOURCE_DIR_GROUP_1], DEFAULT_OPTS);
       expect(svgProcessor).to.be.an.instanceof(BroccoliCachingWriter);
     });
 
-    it('throws on falsey `inputNodes`', function () {    
+    it('throws on falsey `inputNodes`', function () {
       function TestProcessor(inputNodes, options) {
         options = options || DEFAULT_OPTS;
         SvgProcessor.call(this, inputNodes, options);
       }
       TestProcessor.prototype = Object.create(SvgProcessor.prototype);
-      TestProcessor.prototype.constructor = TestProcessor;    
-      TestProcessor.prototype.build = function() {};    
+      TestProcessor.prototype.constructor = TestProcessor;
+      TestProcessor.prototype.build = function() {};
 
       var errorMsgPrefix = 'TestProcessor (' + ANNOTATION + '): Expected a non-falsey argument for `_inputNode`, got ';
-      
+
       expect(function() {
         new TestProcessor();
       }).to.throw(TypeError, errorMsgPrefix + 'undefined');
@@ -107,22 +108,22 @@ describe('SVGProcessor', function () {
 
       expect(function() {
         new TestProcessor(false);
-      }).to.throw(TypeError, errorMsgPrefix + 'false');  
+      }).to.throw(TypeError, errorMsgPrefix + 'false');
     });
   });
 
 
   describe('build', function() {
 
-    it('writes all SVGs in a single directory to the target outputFile', function() {      
+    it('writes all SVGs in a single directory to the target outputFile', function() {
       var inputNodes = [SOURCE_DIR_GROUP_1];
       builder = makeBuilderFromInputNodes(inputNodes);
 
       return builder.build().then(function(results) {
         var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
-        
+
         testForSymbols(loadSVG(outputDestination), ID_MANIFEST[SOURCE_DIR_GROUP_1]);
-      });    
+      });
     });
 
     it('writes all SVGs from a list of directories to the target outputFile', function() {
@@ -131,22 +132,21 @@ describe('SVGProcessor', function () {
 
       return builder.build().then(function(results) {
         var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
-        var symbolIds = ID_MANIFEST[SOURCE_DIR_GROUP_1].concat(ID_MANIFEST[SOURCE_DIR_GROUP_2]);  
+        var symbolIds = ID_MANIFEST[SOURCE_DIR_GROUP_1].concat(ID_MANIFEST[SOURCE_DIR_GROUP_2]);
 
         testForSymbols(loadSVG(outputDestination), symbolIds);
-      });      
+      });
     });
 
-    // TODO: Implement test
     it('passes options to SVGStore', function() {
       var inputNode = SOURCE_DIR_SVGSTORE_OPTS;
-      var CUSTOM_ATTR_VALUES = {
-        'x-custom-attr': 'foo'
+      var svgstoreOpts = {
+        svgAttrs: { 'x-custom-svg-attr': 'red' },
+        symbolAttrs: { 'x-custom-symbol-attr': 'blue' },
+        copyAttrs: ['x-copied-symbol-attr']
       };
 
-      builder = makeBuilderFromInputNodes(inputNode, {
-        svgstoreOpts: { customSymbolAttrs: ['x-custom-attr'] }        
-      });
+      builder = makeBuilderFromInputNodes(inputNode, { svgstoreOpts: svgstoreOpts });
 
       return builder.build().then(function (results) {
         var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
@@ -155,14 +155,16 @@ describe('SVGProcessor', function () {
         var $ = loadSVG(outputDestination);
         testForSymbols($, symbolId);
 
-        expect($('symbol').attr('x-custom-attr')).to.equal(CUSTOM_ATTR_VALUES['x-custom-attr']);
+        expect($('svg').attr('x-custom-svg-attr')).to.equal(svgstoreOpts.svgAttrs['x-custom-svg-attr']);
+        expect($('symbol').attr('x-custom-symbol-attr')).to.equal(svgstoreOpts.symbolAttrs['x-custom-symbol-attr']);
+        expect($('symbol').attr('x-copied-symbol-attr')).to.equal(svgstoreOpts.copyAttrs['x-copied-symbol-attr']);
       });
     });
 
     it('enables per-file configuration via a `fileSettings` hash', function() {
       var inputNodes = [SOURCE_DIR_GROUP_1];
       var customIDs = ['customID-1', 'customID-2', 'customID-3'];
-      var fileSettings = { 
+      var fileSettings = {
         [ID_MANIFEST[SOURCE_DIR_GROUP_1][0]]: { id: customIDs[0] },
         [ID_MANIFEST[SOURCE_DIR_GROUP_1][1]]: { id: customIDs[1] },
         [ID_MANIFEST[SOURCE_DIR_GROUP_1][2]]: { id: customIDs[2] }
