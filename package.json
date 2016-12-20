@@ -3,9 +3,13 @@
   "version": "0.4.0",
   "description": "Combine all your SVGs into one using <symbol>",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jmarquis/broccoli-svgstore.git"
+    "url": "https://github.com/svgstore/broccoli-svgstore"
   },
   "scripts": {
     "test": "./node_modules/.bin/_mocha"
