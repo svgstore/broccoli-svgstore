@@ -70,11 +70,11 @@ var svgProcessor, builder;
 
 describe('SVGProcessor', function () {
 
-  // afterEach(function() {
-  //   if (builder) {
-  //     return builder.cleanup();
-  //   }
-  // });
+  afterEach(function() {
+    if (builder) {
+      return builder.cleanup();
+    }
+  });
 
   describe('construction', function() {
 
