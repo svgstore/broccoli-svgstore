@@ -1,3 +1,8 @@
+# 0.4.1 -- January 9, 2017
+
+- Fix incorrect behavior of setting `inline` to `true` when calling `svgOutput.toString()`
+
+
 # 0.4.0 -- December 20, 2016
 
 - Update to `svgstore` @ 2.x.
