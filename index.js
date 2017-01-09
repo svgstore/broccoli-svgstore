@@ -14,6 +14,11 @@ var defaultSettings = {
   svgstoreOpts: {},
 };
 
+var defaultSvgAttrs = {
+  xmlns: 'http://www.w3.org/2000/svg',
+  'xmlns:xlink': 'http://www.w3.org/1999/xlink'
+};
+
 // TOOD: Perhaps be a bit more robust (and thus, more explicit about the proper API) with validation
 var validationErrorPrefix = 'Expected a non-falsey argument for `_inputNode`, got ';
 
@@ -23,6 +28,9 @@ function SvgProcessor(_inputNode, _options) {
   }
 
   var options = objectAssign({}, defaultSettings, _options);
+
+  options.svgstoreOpts.svgAttrs = objectAssign({}, defaultSvgAttrs, options.svgstoreOpts.svgAttrs);
+
   if (options.name != null) {
     this._name = options.name;
   } else {
@@ -30,9 +38,9 @@ function SvgProcessor(_inputNode, _options) {
   }
   this._annotation = options.annotation;
   this._options = options;
-  
+
   var label = this._name + ' (' + this._annotation + ')';
-  if (!_inputNode) { 
+  if (!_inputNode) {
     throw new TypeError(label + ': ' + validationErrorPrefix + _inputNode);
   }
 
@@ -55,7 +63,7 @@ SvgProcessor.prototype.build = function() {
   var fileSettings = this._options.fileSettings || {};
 
   try {
-    // iterate through `inputPaths` of our `inputNodes` (`inputPaths` is an array of 
+    // iterate through `inputPaths` of our `inputNodes` (`inputPaths` is an array of
     // paths on disk corresponding to each node in `inputNodes`)
     for (var i = 0, l = this.inputPaths.length; i < l; i++) {
       var srcDir = this.inputPaths[i];
@@ -67,12 +75,12 @@ SvgProcessor.prototype.build = function() {
         var stat = fs.statSync(inputFilePath);
 
         if (stat && stat.isFile()) {
-          var fileNameWithoutExtension = inputFileName.replace(/\.[^\.]+$/, '');  
+          var fileNameWithoutExtension = inputFileName.replace(/\.[^\.]+$/, '');
           var fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
           var inputFileSettings = fileSettings[fileNameWithoutExtension] || {};
-          var svgId = inputFileSettings.id || fileNameWithoutExtension;  
+          var svgId = inputFileSettings.id || fileNameWithoutExtension;
           var fileSVGStoreOpts = inputFileSettings.svgstoreOpts || {};
-          
+
           svgOutput.add(svgId, fileContents, fileSVGStoreOpts);
         }
       }
