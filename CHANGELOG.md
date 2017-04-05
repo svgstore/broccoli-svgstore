@@ -1,3 +1,8 @@
+# 0.4.2 -- April 5, 2017
+
+- Remove unnecessary (and broken-in-Windows) check for absolute path on `this.outputPath` ([#31](https://github.com/svgstore/broccoli-svgstore/pull/31)).
+
+
 # 0.4.1 -- January 9, 2017
 
 - Fix incorrect behavior of setting `inline` to `true` when calling `svgOutput.toString()`

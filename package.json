@@ -1,6 +1,6 @@
 {
   "name": "broccoli-svgstore",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Combine all your SVGs into one using <symbol>",
   "main": "index.js",
   "files": [
