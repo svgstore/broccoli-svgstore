@@ -83,8 +83,6 @@ SvgProcessor.prototype.build = function() {
     }
   }
 
-  helpers.assertAbsolutePaths([this.outputPath]); // ❓❓ QUESTION: Necessary?
-
   var outputDestination = path.join(this.outputPath, this._options.outputFile);
 
   mkdirp.sync(path.dirname(outputDestination));
